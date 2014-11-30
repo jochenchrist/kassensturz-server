@@ -4,7 +4,7 @@ import kassensturz.domain.BankAccount;
 import kassensturz.domain.User;
 import kassensturz.event.AccountBalance;
 import kassensturz.exception.NotFoundException;
-import kassensturz.integration.AccountBalanceRetrieval;
+import kassensturz.integration.CommandRetrieveAccountBalance;
 import kassensturz.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -26,9 +26,6 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-
-    @Autowired
-    AccountBalanceRetrieval accountBalanceRetrieval;
 
     /**
      * @return A list of all available users, with link
@@ -56,7 +53,7 @@ public class UserController {
         }
 
         for(BankAccount bankAccount : user.bankAccounts) {
-            final AccountBalance accountBalance = accountBalanceRetrieval.getBalance(bankAccount.bank, bankAccount.iban);
+            final AccountBalance accountBalance = new CommandRetrieveAccountBalance(bankAccount.bank, bankAccount.iban).execute();
             bankAccount.type = accountBalance.type;
             bankAccount.amount = accountBalance.amount;
         }

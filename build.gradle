@@ -23,6 +23,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("com.fasterxml.jackson.core:jackson-databind")
     compile("org.springframework.hateoas:spring-hateoas")
+    compile 'com.netflix.hystrix:hystrix-core:1.4.0-RC5'
     testCompile("junit:junit")
     testCompile("org.springframework:spring-test")
     testCompile("com.jayway.jsonpath:json-path-assert:0.9.1")
