@@ -54,8 +54,10 @@ public class UserController {
 
         for(BankAccount bankAccount : user.bankAccounts) {
             final AccountBalance accountBalance = new CommandRetrieveAccountBalance(bankAccount.bank, bankAccount.iban).execute();
-            bankAccount.type = accountBalance.type;
-            bankAccount.amount = accountBalance.amount;
+            if(accountBalance != null) {
+                bankAccount.type = accountBalance.type;
+                bankAccount.amount = accountBalance.amount;
+            }
         }
 
         user.add(ControllerLinkBuilder.linkTo(methodOn(UserController.class).getUser(user.username)).withSelfRel());
