@@ -33,7 +33,7 @@ public class CommandRetrieveAccountBalance extends HystrixCommand<AccountBalance
      * Constructor.
      */
     public CommandRetrieveAccountBalance(Bank bank, String iban) {
-        super(HystrixCommandGroupKey.Factory.asKey("RetrieveAccountBalanceGroup"));
+        super(HystrixCommandGroupKey.Factory.asKey("RetrieveAccountBalanceGroup" + bank));
 
         this.bank = bank;
         this.iban = iban;
