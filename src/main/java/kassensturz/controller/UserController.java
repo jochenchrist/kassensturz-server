@@ -57,24 +57,14 @@ public class UserController {
             throw new NotFoundException();
         }
 
-        Map<BankAccount, Future<AccountBalance>> futureMap = new HashMap<>();
-
-        user.bankAccounts.forEach(bankAccount ->
-            futureMap.put(bankAccount, new CommandRetrieveAccountBalance(bankAccount.bank, bankAccount.iban).queue())
-        );
-
-        futureMap.forEach((bankAccount, future) -> {
-            try {
-                AccountBalance accountBalance = future.get(); // blocking
-                if(accountBalance != null) {
-                    bankAccount.type = accountBalance.type;
-                    bankAccount.amount = accountBalance.amount;
-                    bankAccount.timestamp = accountBalance.timestamp;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        for(BankAccount bankAccount : user.bankAccounts) {
+            final AccountBalance accountBalance = new CommandRetrieveAccountBalance(bankAccount.bank, bankAccount.iban).execute();
+            if(accountBalance != null) {
+                bankAccount.type = accountBalance.type;
+                bankAccount.amount = accountBalance.amount;
+                bankAccount.timestamp = accountBalance.timestamp;
             }
-        });
+        }
 
         user.add(ControllerLinkBuilder.linkTo(methodOn(UserController.class).getUser(user.username)).withSelfRel());
 
