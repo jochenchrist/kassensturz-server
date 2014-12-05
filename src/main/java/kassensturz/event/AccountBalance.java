@@ -10,5 +10,5 @@ import java.util.Date;
 public class AccountBalance {
     public BigDecimal amount;
     public String type;
-    public Instant timestamp;
+    public String timestamp;
 }

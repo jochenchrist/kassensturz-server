@@ -13,7 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.OK;
@@ -52,13 +57,24 @@ public class UserController {
             throw new NotFoundException();
         }
 
-        for(BankAccount bankAccount : user.bankAccounts) {
-            final AccountBalance accountBalance = new CommandRetrieveAccountBalance(bankAccount.bank, bankAccount.iban).execute();
-            if(accountBalance != null) {
-                bankAccount.type = accountBalance.type;
-                bankAccount.amount = accountBalance.amount;
+        Map<BankAccount, Future<AccountBalance>> futureMap = new HashMap<>();
+
+        user.bankAccounts.forEach(bankAccount ->
+            futureMap.put(bankAccount, new CommandRetrieveAccountBalance(bankAccount.bank, bankAccount.iban).queue())
+        );
+
+        futureMap.forEach((bankAccount, future) -> {
+            try {
+                AccountBalance accountBalance = future.get(); // blocking
+                if(accountBalance != null) {
+                    bankAccount.type = accountBalance.type;
+                    bankAccount.amount = accountBalance.amount;
+                    bankAccount.timestamp = accountBalance.timestamp;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
+        });
 
         user.add(ControllerLinkBuilder.linkTo(methodOn(UserController.class).getUser(user.username)).withSelfRel());
 

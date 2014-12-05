@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.Clock;
+import java.time.Instant;
 
 /**
  * AccountBalanceRetrieval as a Command with Hystrix Support
@@ -54,6 +56,7 @@ public class CommandRetrieveAccountBalance extends HystrixCommand<AccountBalance
         final long start = System.currentTimeMillis();
 
         final AccountBalance accountBalance = restTemplate.getForObject(backendUrl, AccountBalance.class);
+        accountBalance.timestamp = Instant.now().toString();
 
         final long end = System.currentTimeMillis();
         logger.info("END   GET {} Duration: {}", backendUrl, end-start);
