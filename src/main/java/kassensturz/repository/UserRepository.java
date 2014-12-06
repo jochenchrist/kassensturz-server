@@ -23,6 +23,7 @@ public class UserRepository {
      */
     public UserRepository() {
         users.add(jochen());
+        users.add(julia());
         users.add(new User("peter", Bank.HIMBEERBANK, "DE99123456780000000004"));
     }
 
@@ -49,6 +50,17 @@ public class UserRepository {
                                           new BankAccount(Bank.CLOUDBANK, "DE99123456780000000002"),
                                           new BankAccount(Bank.CLOUDBANK, "DE99123456780000000003")
                 );
+        return user;
+    }
+
+
+    private static User julia() {
+        User user = new User();
+        user.username = "julia";
+        user.bankAccounts = Arrays.asList(
+                new BankAccount(Bank.CLOUDBANK, "DE99123456780000000005"),
+                new BankAccount(Bank.HIMBEERBANK, "DE99123456780000000001")
+        );
         return user;
     }
 
